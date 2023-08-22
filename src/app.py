@@ -79,13 +79,16 @@ def convert():
     chunks = get_splitted_text(doc)
     print(len(chunks))
 
-    menu_items = dict()
+    menu_items = {"menu": []}
     for chunk in chunks:
         items_unstructured = the_chain.run(chunk)
         for item in items_unstructured.split(","):
             food_price = item.split(":")
             if len(food_price) == 2:
-                menu_items[food_price[0]] = food_price[1]
+                menu_items["menu"].append({
+                    "name": food_price[0],
+                    "price": food_price[1]
+                })
 
     return menu_items
 
