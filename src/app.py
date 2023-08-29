@@ -1,6 +1,8 @@
 import json
 from typing import List
 from dotenv import load_dotenv
+import re
+import os
 
 from langchain import PromptTemplate
 from langchain.chains import SequentialChain, LLMChain
@@ -14,6 +16,10 @@ from flask import Flask, request
 
 load_dotenv()
 
+DEMO_API = "/var/lib/afthr/demo-api"
+PRODUCTION_API = "/var/lib/afthr/api"
+URL_PREFIX = "https://demo-api.afthr.com/"
+
 # text splitter for chatGPT 3.5
 text_splitter = TokenTextSplitter(
     chunk_size=768, chunk_overlap=32, model_name="gpt-3.5-turbo"
@@ -25,7 +31,7 @@ def get_splitted_text(text: str) -> List[str]:
 
 
 def get_parsing_chain():
-    llm = OpenAI(temperature=0.0, top_p=1)
+    llm = OpenAI(temperature=0.0)
 
     # extracting food from menu
     fi_food = (
@@ -75,9 +81,11 @@ app = Flask("menu2json")
 @app.route("/convert", methods=["GET"])
 def convert():
     pdf_path = request.json["path"]
+    is_demo = request.json["demo"]
+    pdf_prefix = DEMO_API if is_demo else PRODUCTION_API
+    pdf_path = os.path.join(pdf_prefix, pdf_path.removeprefix(URL_PREFIX))
     doc = UnstructuredPDFLoader(pdf_path).load()[0].page_content
     chunks = get_splitted_text(doc)
-    print(len(chunks))
 
     menu_items = {"menu": []}
     for chunk in chunks:
@@ -85,12 +93,13 @@ def convert():
         for item in items_unstructured.split(","):
             food_price = item.split(":")
             if len(food_price) == 2:
-                menu_items["menu"].append({
-                    "name": food_price[0],
-                    "price": food_price[1]
-                })
+                food_price[0] = re.sub(r"\n|\t", "", food_price[0])
+                food_price[1] = re.sub(r"\n|\t|$|€", "", food_price[1])
+                menu_items["menu"].append(
+                    {"name": food_price[0].lower(), "price": food_price[1]}
+                )
 
     return menu_items
 
 
-app.run(host="localhost", port=1234)
+app.run(host="localhost", port=os.environ.get("PDF_PORT", 1234))
