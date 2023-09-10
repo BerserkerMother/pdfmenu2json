@@ -13,8 +13,11 @@ from langchain.text_splitter import TokenTextSplitter
 from langchain.output_parsers import CommaSeparatedListOutputParser
 
 from flask import Flask, request
+import dotenv
 
 from logger import logger
+
+dotenv.load_dotenv()
 
 # set up logging
 log = logger.get_logger("pdf2menu")
@@ -110,3 +113,5 @@ def convert():
 @app.route("/", methods=["GET"])
 def greeting():
     return {"response": "Yes I do work"}
+
+# app.run(host="localhost", port="1234")
