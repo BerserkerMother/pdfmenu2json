@@ -1,6 +1,5 @@
 import json
 from typing import List
-from dotenv import load_dotenv
 import re
 import os
 import logging
@@ -19,8 +18,6 @@ from logger import logger
 
 # set up logging
 log = logger.get_logger("pdf2menu")
-
-load_dotenv()
 
 # text splitter for chatGPT 3.5
 text_splitter = TokenTextSplitter(
@@ -89,6 +86,7 @@ def save_pdf_menu(pdf_menu) -> str:
 
 @app.route("/convert", methods=["GET"])
 def convert():
+    log.debug("bro test")
     pdf_menu = request.files["menu"]
     file_path = save_pdf_menu(pdf_menu=pdf_menu)
     doc = UnstructuredPDFLoader(file_path).load()[0].page_content
@@ -106,6 +104,7 @@ def convert():
                     {"name": food_price[0].lower(), "price": food_price[1]}
                 )
     os.remove(file_path)
+    log.debug("bro really?")
     return menu_items
 
 @app.route("/", methods=["GET"])
