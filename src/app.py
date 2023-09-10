@@ -3,6 +3,7 @@ from typing import List
 from dotenv import load_dotenv
 import re
 import os
+import logging
 
 from langchain import PromptTemplate
 from langchain.chains import SequentialChain, LLMChain
@@ -14,11 +15,12 @@ from langchain.output_parsers import CommaSeparatedListOutputParser
 
 from flask import Flask, request
 
-load_dotenv()
+from logger import logger
 
-DEMO_API = "/var/lib/afthr/demo-api"
-PRODUCTION_API = "/var/lib/afthr/api"
-URL_PREFIX = "https://demo-api.afthr.com/"
+# set up logging
+log = logger.get_logger("pdf2menu")
+
+load_dotenv()
 
 # text splitter for chatGPT 3.5
 text_splitter = TokenTextSplitter(
@@ -77,14 +79,19 @@ the_chain = get_parsing_chain()
 
 app = Flask("menu2json")
 
+def save_pdf_menu(pdf_menu) -> str:
+    """saves pdf file locally
+    
+    returns: path to pdf file"""
+    file_path = pdf_menu.filename
+    pdf_menu.save(file_path)
+    return file_path
 
 @app.route("/convert", methods=["GET"])
 def convert():
-    pdf_path = request.json["path"]
-    is_demo = request.json["demo"]
-    pdf_prefix = DEMO_API if is_demo else PRODUCTION_API
-    pdf_path = os.path.join(pdf_prefix, pdf_path.removeprefix(URL_PREFIX))
-    doc = UnstructuredPDFLoader(pdf_path).load()[0].page_content
+    pdf_menu = request.files["menu"]
+    file_path = save_pdf_menu(pdf_menu=pdf_menu)
+    doc = UnstructuredPDFLoader(file_path).load()[0].page_content
     chunks = get_splitted_text(doc)
 
     menu_items = {"menu": []}
@@ -98,8 +105,9 @@ def convert():
                 menu_items["menu"].append(
                     {"name": food_price[0].lower(), "price": food_price[1]}
                 )
-
+    os.remove(file_path)
     return menu_items
 
-
-app.run(host="localhost", port=os.environ.get("PDF_PORT", 1234))
+@app.route("/", methods=["GET"])
+def greeting():
+    return {"response": "Yes I do work"}

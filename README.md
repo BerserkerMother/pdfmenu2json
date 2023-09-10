@@ -1,4 +1,5 @@
-# MenuAutomation
+
+5 seconds# MenuAutomation
 
 Afterhours pdf menu converter.
 
