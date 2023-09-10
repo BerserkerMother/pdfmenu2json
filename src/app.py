@@ -87,7 +87,7 @@ def save_pdf_menu(pdf_menu) -> str:
     pdf_menu.save(file_path)
     return file_path
 
-@app.route("/convert", methods=["GET"])
+@app.route("/convert", methods=["GET", "POST"])
 def convert():
     log.debug("bro test")
     pdf_menu = request.files["menu"]
