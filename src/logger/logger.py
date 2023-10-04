@@ -13,6 +13,7 @@ with open("logger/logging_config.yaml", "r", encoding="utf-8") as f:
 
 # logging.config.fileConfig(fname="src/logger/logging.conf", disable_existing_loggers=False)
 
+
 def get_logger(name: str):
     """Logs a message
     Parameters:
@@ -20,4 +21,3 @@ def get_logger(name: str):
     """
     logger = logging.getLogger(name)
     return logger
-

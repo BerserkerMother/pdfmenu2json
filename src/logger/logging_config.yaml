@@ -1,16 +1,17 @@
 version: 1
+disable_existing_loggers: False
 formatters:
   simple:
     format: '[%(levelname)s] %(asctime)s - %(name)s - %(message)s'
 handlers:
   console:
     class: logging.StreamHandler
-    level: DEBUG
+    level: INFO
     formatter: simple
     stream: ext://sys.stdout
 loggers:
   sampleLogger:
-    level: DEBUG
+    level: INFO
     handlers: [console]
     propagate: no
 root:
