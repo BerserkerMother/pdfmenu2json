@@ -30,7 +30,10 @@ def get_food_chain():
 
 
 def get_price_chain():
-    fi_price = "your response should be a list of food and their prices separated by ; , eg: `foo: 20$; bar: 10$; baz: 43$`"
+    fi_price = (
+        "your response should be a list of foods and their prices separated by ; and insert : between food and price"
+        ", eg: `foo: 20$; bar: 10$; baz: 43$`"
+    )
     price_template = (
         "You are given a menu of a restaurant foods. The menu consists of foods with prices and ingridents."
         " Some foods may be grouped together and share the same price."

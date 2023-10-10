@@ -19,8 +19,8 @@ def llm_to_json(menu_dict: Dict, items_unstructured) -> Dict:
     foods_name = []  # for categorizing
     logger.info(items_unstructured)
     for item_price in items_unstructured.split(";"):
+        logger.info(item_price, extra={"json_fields": LoggingExtras.Success})
         food_price = item_price.split(":")
-        logger.info(food_price, extra={"json_fields": LoggingExtras.Success})
         if len(food_price) == 2:
             name = re.sub(r"\n|\t", "", food_price[0])
             name = name.lower().strip()
@@ -36,6 +36,7 @@ def llm_to_json(menu_dict: Dict, items_unstructured) -> Dict:
         else:
             logger.warning(item_price, extra={"json_fields": LoggingExtras.ItemError})
     return menu_dict
+
 
 def to_float(num: str) -> float:
     """helper function to check if str can be converted to float"""
