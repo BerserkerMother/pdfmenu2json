@@ -2,6 +2,7 @@ import time
 from typing import List
 
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 from bs4.element import Comment
 
@@ -19,8 +20,11 @@ text_splitter = TokenTextSplitter(
 
 
 def get_html(link: str, time_to_sleep: int = 1) -> str:
+    chrome_options = Options()
+    chrome_options.add_argument("--headless=new") # for Chrome >= 109
+    
     # start web browser
-    browser = webdriver.Firefox()
+    browser = webdriver.Chrome(options=chrome_options)
 
     # get source code
     browser.get(link)
