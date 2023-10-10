@@ -16,6 +16,7 @@ html_chain = html.get_parsing_chain()
 
 app = Flask("menu2json")
 
+
 @app.route("/pdf", methods=["POST"])
 def pdf_convert():
     pdf_menu = request.files["menu"]
