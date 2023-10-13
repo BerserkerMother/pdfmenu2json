@@ -65,7 +65,7 @@ def format_category_to_dict(llm_out: str, food_categories: Dict) -> Dict:
         if len(food_category) == 2:
             name = re.sub(r"\n|\t", "", food_category[0])
             name = name.lower().strip()
-            category = food_category[1].strip()
+            category = food_category[1].strip().lower()
             food_categories[name] = category
     return food_categories
 
